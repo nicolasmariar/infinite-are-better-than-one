@@ -6,25 +6,15 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 /**
- * Marco dorado ornamentado de la Gioconda, usando como textura frontal la foto real
- * del marco del Louvre (hojas de acanto + perlas + filetes dorados).
- *
- * El plane frontal tiene la imagen completa (incluye la Gioconda original).
- * Encima, pintamos la Gioconda actual del ciclo con un tamaño que tape EXACTAMENTE
- * el recorte interior del marco de referencia (así las molduras doradas siempre
- * quedan visibles, la cara central es la única que cambia).
- *
- * Proporciones reales del cuadro + marco del Louvre:
- *   Cuadro: 77cm × 53cm
- *   Marco total: ~109cm × 83cm (ratio ancho/alto ≈ 0.76)
+ * Marco dorado ornamentado de la Gioconda con la foto real del marco del Louvre
+ * como textura frontal, y dos planos internos con cross-fade entre Giocondas.
  */
 
-// Tamaño del marco (aspect ratio exacto de la textura recortada 1240×1659 = 0.7474)
 const FRAME_W = 0.83;
-const FRAME_H = FRAME_W * (1659 / 1240); // 1.1104 — mismo ratio que la textura, sin deformación
+const FRAME_H = FRAME_W * (1659 / 1240); // aspect de la textura real (sin borde)
 const FRAME_DEPTH = 0.06;
 
-// Recorte interior donde va la imagen (% del marco — medido sobre la foto de referencia)
+// Recorte interior (% del marco) — porción de la textura ocupada por el lienzo
 const INNER_LEFT_PCT = 0.165;
 const INNER_RIGHT_PCT = 0.835;
 const INNER_TOP_PCT = 0.14;
@@ -32,7 +22,6 @@ const INNER_BOTTOM_PCT = 0.86;
 
 const INNER_W = FRAME_W * (INNER_RIGHT_PCT - INNER_LEFT_PCT);
 const INNER_H = FRAME_H * (INNER_BOTTOM_PCT - INNER_TOP_PCT);
-// Offset del centro del interior respecto al centro del marco
 const INNER_OFFSET_X = FRAME_W * ((INNER_LEFT_PCT + INNER_RIGHT_PCT) / 2 - 0.5);
 const INNER_OFFSET_Y = -FRAME_H * ((INNER_TOP_PCT + INNER_BOTTOM_PCT) / 2 - 0.5);
 
@@ -55,7 +44,6 @@ export function GiocondaFrame({
   useEffect(() => {
     frameTexture.colorSpace = THREE.SRGBColorSpace;
     frameTexture.anisotropy = 16;
-    // Escalar un poco la textura para que desborde el plane (elimina el borde negro exterior)
     frameTexture.center.set(0.5, 0.5);
     frameTexture.repeat.set(1.0, 1.0);
     frameTexture.needsUpdate = true;
@@ -83,17 +71,11 @@ export function GiocondaFrame({
 
   return (
     <group position={[0, y, z]}>
-      {/* Profundidad del marco (box sólida para la silueta lateral) */}
       <mesh castShadow position={[0, 0, -FRAME_DEPTH / 2]}>
         <boxGeometry args={[FRAME_W, FRAME_H, FRAME_DEPTH]} />
-        <meshStandardMaterial
-          color="#6a4e15"
-          roughness={0.55}
-          metalness={0.55}
-        />
+        <meshStandardMaterial color="#6a4e15" roughness={0.55} metalness={0.55} />
       </mesh>
 
-      {/* Plane frontal con la textura real del marco del Louvre */}
       <mesh position={[0, 0, 0.001]}>
         <planeGeometry args={[FRAME_W, FRAME_H]} />
         <meshStandardMaterial
@@ -104,18 +86,62 @@ export function GiocondaFrame({
         />
       </mesh>
 
-      {/* Tapamos el recorte interior con un plano negro para eliminar la Gioconda original */}
+      {/* Fondo negro que tapa la Gioconda original */}
       <mesh position={[INNER_OFFSET_X, INNER_OFFSET_Y, 0.003]}>
         <planeGeometry args={[INNER_W, INNER_H]} />
         <meshBasicMaterial color="#0a0806" />
       </mesh>
 
-      {/* Gioconda actual — llena exactamente el recorte */}
+      {/* Gioconda actual + siguiente con cross-fade */}
       <GiocondaPlane url={currentUrl} opacity={fade} zOffset={0.007} />
-      {/* Gioconda siguiente (cross-fade) */}
       <GiocondaPlane url={nextUrl} opacity={1 - fade} zOffset={0.006} />
     </group>
   );
+}
+
+/**
+ * Hook para cargar una textura cross-origin manualmente (no bloquea Suspense).
+ * Devuelve null mientras carga o si falla, lo cual es exactamente lo que necesitamos
+ * para un cross-fade suave — el plane se oculta hasta que la imagen está lista.
+ */
+function useCrossOriginTexture(url: string): THREE.Texture | null {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin("anonymous");
+    loader.load(
+      url,
+      (tex) => {
+        if (cancelled) {
+          tex.dispose();
+          return;
+        }
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = 16;
+        tex.needsUpdate = true;
+        setTexture(tex);
+      },
+      undefined,
+      (err) => {
+        if (!cancelled) console.warn("Texture load failed:", url, err);
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  // cleanup al desmontar
+  useEffect(() => {
+    return () => {
+      texture?.dispose();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [texture]);
+
+  return texture;
 }
 
 function GiocondaPlane({
@@ -127,42 +153,32 @@ function GiocondaPlane({
   opacity: number;
   zOffset: number;
 }) {
-  const texture = useTexture(url);
-  const matRef = useRef<THREE.MeshBasicMaterial>(null!);
-
-  useEffect(() => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 16;
-    texture.needsUpdate = true;
-  }, [texture]);
+  const texture = useCrossOriginTexture(url);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
 
   useFrame(() => {
     if (matRef.current) {
-      matRef.current.opacity = THREE.MathUtils.lerp(matRef.current.opacity, opacity, 0.06);
+      matRef.current.opacity = THREE.MathUtils.lerp(
+        matRef.current.opacity,
+        texture ? opacity : 0,
+        0.06,
+      );
     }
   });
 
-  // El plane llena el recorte interior con el aspecto real de la Gioconda
-  // (si la Gioconda generada tiene otro ratio, se hace cover centrado usando
-  // repeat/offset de la textura para no deformar el marco)
   const { planeW, planeH, repeat, offset } = useMemo(() => {
-    const img = texture.image as HTMLImageElement | undefined;
+    const img = texture?.image as HTMLImageElement | undefined;
     const imgRatio = img && img.width ? img.height / img.width : 1.5;
     const slotRatio = INNER_H / INNER_W;
-
-    // Cover: el plane SIEMPRE es del tamaño del slot, y tocamos los UV para
-    // que la imagen llene sin deformarse (crop).
     let rx = 1,
       ry = 1,
       ox = 0,
       oy = 0;
     if (imgRatio > slotRatio) {
-      // imagen más vertical que el slot: cropear vertical
       const scale = slotRatio / imgRatio;
       ry = scale;
       oy = (1 - scale) / 2;
     } else {
-      // imagen más horizontal: cropear horizontal
       const scale = imgRatio / slotRatio;
       rx = scale;
       ox = (1 - scale) / 2;
@@ -171,9 +187,13 @@ function GiocondaPlane({
   }, [texture]);
 
   useEffect(() => {
-    texture.repeat.set(repeat[0], repeat[1]);
-    texture.offset.set(offset[0], offset[1]);
+    if (texture) {
+      texture.repeat.set(repeat[0], repeat[1]);
+      texture.offset.set(offset[0], offset[1]);
+    }
   }, [texture, repeat, offset]);
+
+  if (!texture) return null;
 
   return (
     <mesh position={[INNER_OFFSET_X, INNER_OFFSET_Y, zOffset]}>
@@ -182,7 +202,7 @@ function GiocondaPlane({
         ref={matRef}
         map={texture}
         transparent
-        opacity={opacity}
+        opacity={0}
         toneMapped={false}
       />
     </mesh>
