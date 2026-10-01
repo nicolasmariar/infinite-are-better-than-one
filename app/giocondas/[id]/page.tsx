@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { giocondaUrl } from "@/lib/r2/urls";
 import { giocondaMetadata } from "@/lib/seo/metadata";
-import { giocondaJsonLd } from "@/lib/seo/jsonld";
+import { breadcrumbJsonLd, giocondaJsonLd } from "@/lib/seo/jsonld";
 import type { Gioconda } from "@/lib/supabase/types";
 
 export const revalidate = 3600; // ISR 1h por página
@@ -48,12 +48,46 @@ export default async function GiocondaPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(giocondaJsonLd(g)) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd(g.id)),
+        }}
+      />
       <div className="mx-auto flex min-h-dvh max-w-6xl flex-col gap-8 px-4 py-10 sm:px-8 lg:flex-row lg:items-start lg:gap-12">
         <header className="lg:sticky lg:top-10 lg:w-80 lg:shrink-0">
-          <Link href="/" className="text-sm text-neutral-400 hover:text-neutral-200">
+          {/* Breadcrumbs visibles — duplican el BreadcrumbList JSON-LD arriba
+              para una señal doble a Google y navegación clara para usuarios. */}
+          <nav aria-label="Breadcrumb" className="text-xs text-neutral-500">
+            <ol className="flex flex-wrap items-center gap-1.5">
+              <li>
+                <Link href="/" className="hover:text-neutral-300">
+                  Home
+                </Link>
+              </li>
+              <li aria-hidden>›</li>
+              <li>
+                <Link href="/giocondas" className="hover:text-neutral-300">
+                  All Giocondas
+                </Link>
+              </li>
+              <li aria-hidden>›</li>
+              <li className="text-neutral-400">#{g.id}</li>
+            </ol>
+          </nav>
+          <Link
+            href="/"
+            className="mt-4 inline-block text-sm text-neutral-400 hover:text-neutral-200"
+          >
             ← back to the Louvre
           </Link>
-          <h1 className="mt-4 font-serif text-3xl leading-tight">Gioconda #{g.id}</h1>
+          <h1 className="mt-4 font-serif text-3xl leading-tight">
+            Gioconda #{g.id} generada con IA
+          </h1>
+          <p className="mt-1 font-serif text-sm italic text-neutral-500">
+            Mona Lisa #{g.id} — AI-generated in the style of{" "}
+            <span className="lowercase">{primaryLabel}</span>
+          </p>
           <p className="mt-2 text-sm uppercase tracking-widest text-neutral-400">
             {primaryLabel}
             {g.is_mixed && " · mixed"}
@@ -109,7 +143,7 @@ export default async function GiocondaPage({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={mediumUrl}
-            alt={`Gioconda #${g.id} reimagined in the style of ${primaryLabel}`}
+            alt={`Gioconda #${g.id} — Mona Lisa reimaginada por IA en el estilo de ${primaryLabel}. Arte argentino generativo con inteligencia artificial. AI-generated Mona Lisa in the style of ${primaryLabel}.`}
             width={g.width}
             height={g.height}
             loading="eager"
@@ -120,6 +154,41 @@ export default async function GiocondaPage({
               &ldquo;{g.prompt}&rdquo;
             </blockquote>
           )}
+
+          {/* Contenido SEO-rich bilingüe al pie — sin romper el foco visual
+              en la obra, pero dándole a Google texto que rankear para cada
+              una de las 43k páginas. */}
+          <section className="mt-10 space-y-4 text-sm leading-relaxed text-neutral-400">
+            <p>
+              Esta es la <strong>Gioconda #{g.id}</strong>, una de las{" "}
+              <strong>43.469 Giocondas</strong> generadas con inteligencia
+              artificial en <em>Infinite are better than one</em>,
+              obra de <Link href="/" className="underline hover:text-neutral-200">Nicolás Ruarte</Link>{" "}
+              ganadora del Premio Pueyrredón de Artes Visuales 2025.
+              {!g.is_mixed && g.primary_style && (
+                <>
+                  {" "}La imagen fue producida por un LoRA entrenado sobre la obra
+                  de <strong>{primaryLabel}</strong>, uno de los doce artistas
+                  argentinos que componen el dataset.
+                </>
+              )}
+            </p>
+            <p>
+              This is <strong>Gioconda #{g.id}</strong>, part of a collection of
+              43,469 unique Mona Lisas generated with AI models trained on
+              Argentine artists. Each image is a one-off reinterpretation produced
+              by Stable Diffusion with a LoRA applied.
+            </p>
+            <p className="text-xs">
+              ← <Link href="/giocondas" className="underline hover:text-neutral-200">
+                Ver las 43.469 Giocondas
+              </Link>
+              {" · "}
+              <Link href="/" className="underline hover:text-neutral-200">
+                Volver al Louvre virtual
+              </Link>
+            </p>
+          </section>
         </div>
       </div>
     </main>
