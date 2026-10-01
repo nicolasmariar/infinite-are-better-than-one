@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     alternateLocale: ["en_US"],
     title: "Las 43.469 Giocondas IA — dataset completo | Infinite are better than one",
     description:
-      "Explorá las 43.469 Giocondas generadas con inteligencia artificial por Nicolás Ruarte. Modelos entrenados en artistas argentinos. Finalista Premio Pueyrredón 2025.",
+      "Explorá las 43.469 Giocondas generadas con inteligencia artificial por Nicolás Ruarte. Modelos entrenados en artistas argentinos. Finalista del Premio Prilidiano Pueyrredón de Artes Visuales 2025.",
   },
 };
 

@@ -54,7 +54,7 @@ export function SeoContent() {
           LoRAs, each capturing the style of a different Argentine artist.
         </p>
         <p>
-          La obra fue finalista del <strong>Premio Pueyrredón de Artes Visuales 2025</strong> y
+          La obra fue finalista del <strong>Premio Prilidiano Pueyrredón de Artes Visuales 2025</strong> y
           forma parte del proyecto de tesis de Ruarte en la UNA (Universidad Nacional
           de las Artes) sobre <em>la obra de arte en la época de su generatividad técnica</em> —
           un ensayo artístico y filosófico sobre el rol del artista en la era de la IA
@@ -151,7 +151,7 @@ export function SeoContent() {
       <footer className="mt-16 border-t border-neutral-800/60 pt-8 text-xs text-neutral-500">
         <p>
           © {new Date().getFullYear()} Nicolás Ruarte / NoMa Studio AI.
-          Infinite are better than one · Finalista del Premio Pueyrredón de Artes Visuales 2025.
+          Infinite are better than one · Finalista del Premio Prilidiano Pueyrredón de Artes Visuales 2025.
         </p>
         <p className="mt-2">
           Related: <Link href="/giocondas" className="underline hover:text-neutral-300">All 43,469 Giocondas</Link>

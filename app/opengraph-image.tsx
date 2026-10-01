@@ -96,10 +96,7 @@ export default async function OpenGraphImage() {
           }}
         >
           <div>infinitearebetterthanone.com</div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <span style={{ color: "#d4a574" }}>★</span>
-            <span>Finalista Premio Pueyrredón 2025</span>
-          </div>
+          <div>Finalista del Premio Prilidiano Pueyrredón de Artes Visuales 2025</div>
         </div>
       </div>
     ),

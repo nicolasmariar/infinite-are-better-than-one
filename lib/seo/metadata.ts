@@ -14,10 +14,10 @@ export const ORGANIZATION = "NoMa Studio AI";
  * Máximo ~160 caracteres para no truncar en SERPs.
  */
 const DEFAULT_DESCRIPTION_ES =
-  "43.469 Giocondas generadas con IA entrenada en artistas argentinos. Arte argentino con inteligencia artificial. Finalista Premio Pueyrredón 2025. Por Nicolás Ruarte.";
+  "43.469 Giocondas generadas con IA entrenada en artistas argentinos. Arte argentino con inteligencia artificial. Finalista del Premio Prilidiano Pueyrredón de Artes Visuales 2025. Por Nicolás Ruarte.";
 
 const DEFAULT_DESCRIPTION_EN =
-  "43,469 Mona Lisas reimagined by AI trained on Argentine artists. Argentine AI art. Finalist, Premio Pueyrredón 2025. By Nicolás Ruarte / NoMa Studio AI.";
+  "43,469 Mona Lisas reimagined by AI trained on Argentine artists. Argentine AI art. Finalist, Premio Prilidiano Pueyrredón de Artes Visuales 2025. By Nicolás Ruarte / NoMa Studio AI.";
 
 /**
  * Keywords ampliadas con variantes en español, inglés y combinaciones de
@@ -60,8 +60,8 @@ const KEYWORDS = [
   "Nicolas Ruarte",
   "NoMa Studio AI",
   "NoMa Studio",
-  "Premio Pueyrredón 2025",
-  "Premio Pueyrredón de Artes Visuales",
+  "Premio Prilidiano Pueyrredón de Artes Visuales 2025",
+  "Premio Prilidiano Pueyrredón de Artes Visuales",
 ];
 
 /**
@@ -142,8 +142,8 @@ export function giocondaMetadata(g: Gioconda): Metadata {
   const title = `Gioconda #${g.id} — ${styleLabel}`;
   // Descripción bilingüe intercalada para capturar búsquedas en ambos idiomas.
   const description = g.is_mixed
-    ? `Mona Lisa reimaginada por IA: mezcla de estilos argentinos. Una de 43.469 Giocondas únicas generadas con inteligencia artificial. Finalista Premio Pueyrredón 2025. By Nicolás Ruarte.`
-    : `Mona Lisa reimaginada por IA en el estilo de ${styleLabel}. Arte argentino generativo. Una de 43.469 Giocondas únicas. Finalista Premio Pueyrredón 2025. By Nicolás Ruarte.`;
+    ? `Mona Lisa reimaginada por IA: mezcla de estilos argentinos. Una de 43.469 Giocondas únicas generadas con inteligencia artificial. Finalista del Premio Prilidiano Pueyrredón de Artes Visuales 2025. By Nicolás Ruarte.`
+    : `Mona Lisa reimaginada por IA en el estilo de ${styleLabel}. Arte argentino generativo. Una de 43.469 Giocondas únicas. Finalista del Premio Prilidiano Pueyrredón de Artes Visuales 2025. By Nicolás Ruarte.`;
   const canonical = `${SITE_URL}/giocondas/${g.id}`;
   const imageUrl = giocondaUrl(g.filename, "medium");
 

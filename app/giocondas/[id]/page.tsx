@@ -164,7 +164,7 @@ export default async function GiocondaPage({
               <strong>43.469 Giocondas</strong> generadas con inteligencia
               artificial en <em>Infinite are better than one</em>,
               obra de <Link href="/" className="underline hover:text-neutral-200">Nicolás Ruarte</Link>{" "}
-              finalista del Premio Pueyrredón de Artes Visuales 2025.
+              finalista del Premio Prilidiano Pueyrredón de Artes Visuales 2025.
               {!g.is_mixed && g.primary_style && (
                 <>
                   {" "}La imagen fue producida por un LoRA entrenado sobre la obra

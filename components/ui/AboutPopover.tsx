@@ -78,7 +78,7 @@ export function AboutPopover() {
             (Fileteado Porteño, Indigenous Art, El Eternauta). It processes in real
             time an ever-expanding dataset that currently exceeds 55,000 unique
             images. The installation version of this work has been selected as
-            Finalist for the <strong>Premio Prilidiano Pueyrredón 2025</strong>.
+            Finalist for the <strong>Premio Prilidiano Pueyrredón de Artes Visuales 2025</strong>.
           </p>
         </section>
 
