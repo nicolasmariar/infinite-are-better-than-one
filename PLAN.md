@@ -4,7 +4,7 @@
 
 ## Contexto
 
-Obra original: 43.469+ imágenes de la Gioconda generadas con 12 modelos de IA entrenados con estilos argentinos. Premio Pueyrredón de Artes Visuales 2025. La obra continúa generándose (1 Gioconda nueva cada 5 min vía ComfyUI/n8n en fase 3).
+Obra original: 43.469+ imágenes de la Gioconda generadas con 12 modelos de IA entrenados con estilos argentinos. Finalista del Premio Pueyrredón de Artes Visuales 2025. La obra continúa generándose (1 Gioconda nueva cada 5 min vía ComfyUI/n8n en fase 3).
 
 **Objetivo de la web**: traducir la experiencia museística al navegador. Un usuario llega y se encuentra parado en la sala del Louvre (reconstrucción 3D fiel), pero la única obra expuesta es una Gioconda que cambia cada minuto. Se puede caminar, acercarse, ver detalles, descargar la favorita. En una vista secundaria, un mapa 3D tipo *Interstellar* muestra TODAS las Giocondas ordenadas por influencia estilística (atracción gravitacional según pesos LoRA).
 
@@ -230,7 +230,7 @@ export async function generateMetadata({ params }) {
   const g = await getGiocondaById(params.id);
   return {
     title: `Gioconda #${g.id} — ${g.primary_style} style | infinitearebetterthanone`,
-    description: `Mona Lisa reinterpreted in the style of ${g.primary_style_full_name}. AI-generated from a dataset of ${TOTAL}+ unique Giocondas, Nicolás Ruarte (Premio Pueyrredón 2025).`,
+    description: `Mona Lisa reinterpreted in the style of ${g.primary_style_full_name}. AI-generated from a dataset of ${TOTAL}+ unique Giocondas, Nicolás Ruarte (finalista Premio Pueyrredón 2025).`,
     openGraph: { images: [r2url(g.id, 'medium')] },
     alternates: { canonical: `https://infinitearebetterthanone.com/giocondas/${g.id}` },
   };

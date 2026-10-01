@@ -92,7 +92,7 @@ export function collectionJsonLd() {
       name: ORGANIZATION,
     },
     numberOfItems: 43469,
-    award: "Premio Pueyrredón de Artes Visuales 2025",
+    award: "Finalista del Premio Pueyrredón de Artes Visuales 2025",
     genre: ["AI art", "arte generativo", "arte argentino"],
     keywords:
       "gioconda, mona lisa, gioconda IA, arte argentino, IA argentina, Stable Diffusion, LoRA, Quinquela, Xul Solar, Berni, Leonor Fini, Raquel Forner, Le Parc, Minujín, El Eternauta",
@@ -118,7 +118,7 @@ export function personJsonLd() {
       "@id": `${SITE_URL}#organization`,
       name: ORGANIZATION,
     },
-    award: "Premio Pueyrredón de Artes Visuales 2025",
+    award: "Finalista del Premio Pueyrredón de Artes Visuales 2025",
     description:
       "Artista e investigador argentino especializado en arte generativo con inteligencia artificial. Tesis UNA sobre IA generativa. Creador de Infinite are better than one, imaginAR y La Fileteadora.",
     knowsAbout: [
